@@ -1,0 +1,115 @@
+{
+  "total_cars": 301,
+  "avg_selling_price": 4.66,
+  "avg_present_price": 7.63,
+  "avg_kms": 36947.0,
+  "fuel_types": {
+    "Petrol": 239,
+    "Diesel": 60,
+    "CNG": 2
+  },
+  "seller_types": {
+    "Dealer": 195,
+    "Individual": 106
+  },
+  "transmissions": {
+    "Manual": 261,
+    "Automatic": 40
+  },
+  "model_results": {
+    "Linear Regression": {
+      "R2": 0.849,
+      "RMSE": 1.8652,
+      "MAE": 1.2162,
+      "CV_R2_Mean": -18.176,
+      "CV_R2_Std": 37.8862
+    },
+    "Ridge Regression": {
+      "R2": 0.8492,
+      "RMSE": 1.8637,
+      "MAE": 1.2138,
+      "CV_R2_Mean": -18.0329,
+      "CV_R2_Std": 37.6047
+    },
+    "Random Forest": {
+      "R2": 0.9621,
+      "RMSE": 0.9342,
+      "MAE": 0.6218,
+      "CV_R2_Mean": 0.372,
+      "CV_R2_Std": 0.985
+    },
+    "Gradient Boosting": {
+      "R2": 0.9694,
+      "RMSE": 0.8393,
+      "MAE": 0.559,
+      "CV_R2_Mean": 0.2502,
+      "CV_R2_Std": 1.2413
+    }
+  },
+  "best_model": "Gradient Boosting",
+  "feature_importance": [
+    {
+      "feature": "Present_Price",
+      "importance": 0.8779
+    },
+    {
+      "feature": "Car_Age",
+      "importance": 0.0837
+    },
+    {
+      "feature": "Kms_Driven",
+      "importance": 0.0222
+    },
+    {
+      "feature": "Seller_Type_Individual",
+      "importance": 0.006
+    },
+    {
+      "feature": "Transmission_Manual",
+      "importance": 0.0049
+    },
+    {
+      "feature": "Fuel_Type_Diesel",
+      "importance": 0.0026
+    },
+    {
+      "feature": "Fuel_Type_Petrol",
+      "importance": 0.0019
+    },
+    {
+      "feature": "Owner",
+      "importance": 0.0008
+    }
+  ],
+  "price_by_fuel": {
+    "CNG": 3.1,
+    "Diesel": 10.28,
+    "Petrol": 3.26
+  },
+  "price_by_transmission": {
+    "Automatic": 9.42,
+    "Manual": 3.93
+  },
+  "price_by_seller": {
+    "Dealer": 6.72,
+    "Individual": 0.87
+  },
+  "avg_price_by_year": {
+    "2003": 1.3,
+    "2004": 1.5,
+    "2005": 2.49,
+    "2006": 1.44,
+    "2007": 0.16,
+    "2008": 1.0,
+    "2009": 2.82,
+    "2010": 5.26,
+    "2011": 2.38,
+    "2012": 3.84,
+    "2013": 3.54,
+    "2014": 4.76,
+    "2015": 5.93,
+    "2016": 5.21,
+    "2017": 6.21,
+    "2018": 9.25
+  }
+}

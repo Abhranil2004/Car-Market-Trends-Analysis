@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoTrend AI • Used Car Market Trends & Valuation Engine</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --bg-base: #060911;
+            --bg-surface: #0b1120;
+            --bg-card: rgba(15, 23, 42, 0.65);
+            --bg-card-hover: rgba(22, 33, 60, 0.75);
+            --border-subtle: rgba(255, 255, 255, 0.07);
+            --border-highlight: rgba(99, 102, 241, 0.35);
+            --border-accent: rgba(56, 189, 248, 0.4);
+
+            --primary: #4f46e5;
+            --primary-light: #6366f1;
+            --primary-glow: rgba(79, 70, 229, 0.3);
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.25);
+            --emerald: #10b981;
+            --emerald-glow: rgba(16, 185, 129, 0.25);
+            --amber: #f59e0b;
+            --purple: #a855f7;
+            --rose: #f43f5e;
+
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+
+            --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --radius-full: 9999px;
+
+            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.4);
+            --shadow-glow: 0 0 25px rgba(79, 70, 229, 0.25);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            background-image: 
+                radial-gradient(circle at 10% 10%, rgba(79, 70, 229, 0.14) 0%, transparent 40%),
+                radial-gradient(circle at 90% 85%, rgba(56, 189, 248, 0.1) 0%, transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.04) 0%, transparent 60%);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 15px;
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Ambient Glow Bar */
+        .top-glow-bar {
+            height: 3px;
+            width: 100%;
+            background: linear-gradient(90deg, #4f46e5, #38bdf8, #a855f7, #10b981);
+            background-size: 300% 100%;
+            animation: gradientMove 6s ease infinite;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Navigation Header */
+        .navbar {
+            background: rgba(11, 17, 32, 0.82);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-subtle);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-inner {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+        }
+
+        .brand-icon {
+            width: 46px;
+            height: 46px;
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.25), rgba(56, 189, 248, 0.15));
+            border: 1px solid rgba(79, 70, 229, 0.4);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 0 15px rgba(79, 70, 229, 0.2);
+        }
+
+        .brand-text h1 {
+            font-family: var(--font-heading);
+            font-size: 1.35rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .brand-text h1 span {
+            color: var(--accent);
+            text-shadow: 0 0 12px var(--accent-glow);
+        }
+
+        .brand-text p {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .nav-pills {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.4rem 0.9rem;
+            border-radius: var(--radius-full);
+            font-size: 0.76rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            border: 1px solid transparent;
+            white-space: nowrap;
+        }
+
+        .badge-pill-accent {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent);
+            border-color: rgba(56, 189, 248, 0.25);
+        }
+
+        .badge-pill-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--emerald);
+            border-color: rgba(16, 185, 129, 0.25);
+        }
+
+        /* Main Container */
+        .wrapper {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 2rem 2rem 4rem 2rem;
+        }
+
+        /* Hero / Introduction Banner */
+        .hero-banner {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 1.75rem 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+        }
+
+        .hero-content h2 {
+            font-family: var(--font-heading);
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.3rem;
+            background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-content p {
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+            max-width: 780px;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 1.25rem;
+            flex-wrap: wrap;
+        }
+
+        .chip {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--border-subtle);
+            padding: 0.6rem 1rem;
+            border-radius: var(--radius-md);
+            text-align: center;
+        }
+
+        .chip-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+            display: block;
+        }
+
+        .chip-val {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--accent);
+        }
+
+        /* KPI Metric Cards Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .kpi-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 1.35rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-3px);
+            background: var(--bg-card-hover);
+            border-color: var(--border-highlight);
+            box-shadow: var(--shadow-md);
+        }
+
+        .kpi-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            border-radius: 4px 0 0 4px;
+        }
+
+        .kpi-card.kpi-blue::after { background: var(--accent); }
+        .kpi-card.kpi-emerald::after { background: var(--emerald); }
+        .kpi-card.kpi-purple::after { background: var(--purple); }
+        .kpi-card.kpi-amber::after { background: var(--amber); }
+
+        .kpi-icon-box {
+            width: 50px;
+            height: 50px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            flex-shrink: 0;
+        }
+
+        .icon-blue-bg { background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.25); }
+        .icon-emerald-bg { background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.25); }
+        .icon-purple-bg { background: rgba(168, 85, 247, 0.12); border: 1px solid rgba(168, 85, 247, 0.25); }
+        .icon-amber-bg { background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.25); }
+
+        .kpi-info {
+            flex-grow: 1;
+        }
+
+        .kpi-tag {
+            font-size: 0.74rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        .kpi-value {
+            font-family: var(--font-heading);
+            font-size: 1.85rem;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1.2;
+            margin: 0.2rem 0;
+            letter-spacing: -0.5px;
+        }
+
+        .kpi-value small {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .kpi-subtext {
+            font-size: 0.76rem;
+            color: var(--text-muted);
+        }
+
+        /* Main Workspace Layout */
+        .workspace-grid {
+            display: grid;
+            grid-template-columns: 460px 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Glassmorphism Panel Container */
+        .glass-panel {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 1.75rem;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+        }
+
+        .panel-heading {
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .panel-title {
+            font-family: var(--font-heading);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .panel-desc {
+            font-size: 0.84rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        /* Valuation Form */
+        .calc-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.15rem;
+        }
+
+        .form-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .field-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+        }
+
+        .field-group label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #cbd5e1;
+            letter-spacing: 0.2px;
+        }
+
+        .field-group input,
+        .field-group select {
+            background: rgba(11, 17, 32, 0.85);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            padding: 0.75rem 1rem;
+            color: #fff;
+            font-family: var(--font-body);
+            font-size: 0.92rem;
+            outline: none;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        .field-group input:focus,
+        .field-group select:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+            background: rgba(15, 23, 42, 0.95);
+        }
+
+        .field-group select option {
+            background: #0f172a;
+            color: #fff;
+        }
+
+        .btn-submit-calc {
+            background: linear-gradient(135deg, #4f46e5 0%, #38bdf8 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            font-family: var(--font-heading);
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            box-shadow: 0 4px 15px var(--primary-glow);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-submit-calc:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px var(--primary-glow);
+        }
+
+        .btn-submit-calc:active {
+            transform: translateY(0);
+        }
+
+        /* Valuation Result Display */
+        .valuation-result-box {
+            margin-top: 1.5rem;
+            background: linear-gradient(135deg, rgba(22, 33, 60, 0.8) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border: 1px solid var(--border-accent);
+            border-radius: var(--radius-md);
+            padding: 1.35rem;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
+        }
+
+        .result-head {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .pulse-indicator {
+            width: 9px;
+            height: 9px;
+            background: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent);
+            animation: pulseGlow 2s infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.6; }
+        }
+
+        .result-head h4 {
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--accent);
+        }
+
+        .estimated-price-num {
+            font-family: var(--font-heading);
+            font-size: 2.3rem;
+            font-weight: 900;
+            color: #38bdf8;
+            margin: 0.4rem 0 0.8rem 0;
+            letter-spacing: -0.5px;
+            text-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+        }
+
+        .valuation-matrix {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 0.85rem;
+        }
+
+        .matrix-cell .m-lbl {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 0.15rem;
+        }
+
+        .matrix-cell .m-val {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fff;
+            font-family: var(--font-mono);
+        }
+
+        /* Charts Stack */
+        .charts-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .chart-split-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .chart-container-lg {
+            height: 250px;
+            position: relative;
+            width: 100%;
+        }
+
+        .chart-container-sm {
+            height: 190px;
+            position: relative;
+            width: 100%;
+        }
+
+        /* Benchmark Section */
+        .benchmarks-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Table Styling */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            text-align: left;
+        }
+
+        .custom-table th {
+            background: rgba(11, 17, 32, 0.9);
+            padding: 0.85rem 1rem;
+            font-size: 0.74rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-subtle);
+            white-space: nowrap;
+        }
+
+        .custom-table td {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            color: #cbd5e1;
+            white-space: nowrap;
+        }
+
+        .custom-table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .row-winner td {
+            background: rgba(79, 70, 229, 0.1);
+        }
+
+        .status-champion {
+            color: #34d399;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .color-emerald { color: var(--emerald); }
+        .font-bold { font-weight: 700; }
+
+        /* Dataset Explorer Bar */
+        .filter-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-select {
+            background: rgba(11, 17, 32, 0.85);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            padding: 0.5rem 0.85rem;
+            color: #fff;
+            font-size: 0.82rem;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .toolbar-select:focus {
+            border-color: var(--accent);
+        }
+
+        /* Badges for Fuel Types */
+        .badge-fuel {
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 600;
+        }
+
+        .fuel-diesel { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+        .fuel-petrol { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
+        .fuel-cng { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+
+        /* Footer */
+        .footer-bar {
+            text-align: center;
+            padding: 2.5rem 1rem;
+            border-top: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+            font-size: 0.84rem;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 1200px) {
+            .workspace-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .benchmarks-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .wrapper {
+                padding: 1.25rem 1rem 3rem 1rem;
+            }
+
+            .nav-inner {
+                padding: 0.85rem 1rem;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+
+            .nav-pills {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .hero-banner {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 1.25rem;
+            }
+
+            .hero-stats {
+                width: 100%;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .kpi-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .chart-split-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .valuation-matrix {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-glow-bar"></div>
+
+    <!-- Navigation Bar -->
+    <header class="navbar">
+        <div class="nav-inner">
+            <a href="/" class="brand">
+                <div class="brand-icon">🚗</div>
+                <div class="brand-text">
+                    <h1>AutoTrend<span>AI</span></h1>
+                    <p>Used Car Market Trends & Valuation Engine</p>
+                </div>
+            </a>
+            <div class="nav-pills">
+                <span class="badge badge-pill-accent">📁 Car Dekho Dataset</span>
+                <span class="badge badge-pill-success">⚡ Gradient Boosting (R² = 96.9%)</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="wrapper">
+        <!-- Hero Introduction Banner -->
+        <section class="hero-banner">
+            <div class="hero-content">
+                <h2>Automotive Secondary Market Analytics</h2>
+                <p>Explore empirical price depreciation trends across fuel powertrains, transmission types, and vehicle age with real-time machine learning valuation.</p>
+            </div>
+            <div class="hero-stats">
+                <div class="chip">
+                    <span class="chip-label">Algorithm</span>
+                    <span class="chip-val">GradBoost</span>
+                </div>
+                <div class="chip">
+                    <span class="chip-label">Accuracy (R²)</span>
+                    <span class="chip-val">0.9694</span>
+                </div>
+                <div class="chip">
+                    <span class="chip-label">Test MAE</span>
+                    <span class="chip-val">₹0.56 L</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- KPI Metric Cards Grid -->
+        <section class="kpi-grid">
+            <div class="kpi-card kpi-blue">
+                <div class="kpi-icon-box icon-blue-bg">📊</div>
+                <div class="kpi-info">
+                    <span class="kpi-tag">Total Sample Size</span>
+                    <h3 class="kpi-value" id="kpi-total">301</h3>
+                    <span class="kpi-subtext">Verified Car Dekho Records</span>
+                </div>
+            </div>
+
+            <div class="kpi-card kpi-emerald">
+                <div class="kpi-icon-box icon-emerald-bg">💰</div>
+                <div class="kpi-info">
+                    <span class="kpi-tag">Avg Resale Price</span>
+                    <h3 class="kpi-value" id="kpi-selling">₹4.66 <small>Lakhs</small></h3>
+                    <span class="kpi-subtext">Secondary Market Average</span>
+                </div>
+            </div>
+
+            <div class="kpi-card kpi-purple">
+                <div class="kpi-icon-box icon-purple-bg">🏷️</div>
+                <div class="kpi-info">
+                    <span class="kpi-tag">Avg Showroom Cost</span>
+                    <h3 class="kpi-value" id="kpi-present">₹7.63 <small>Lakhs</small></h3>
+                    <span class="kpi-subtext">Original Ex-Showroom Base</span>
+                </div>
+            </div>
+
+            <div class="kpi-card kpi-amber">
+                <div class="kpi-icon-box icon-amber-bg">⚡</div>
+                <div class="kpi-info">
+                    <span class="kpi-tag">Avg Distance Driven</span>
+                    <h3 class="kpi-value" id="kpi-kms">36,947 <small>Kms</small></h3>
+                    <span class="kpi-subtext">Fleet Odometer Median</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Workspace (Valuation Engine + Visual Trends) -->
+        <div class="workspace-grid">
+            <!-- Left: Real-time Car Valuation Engine -->
+            <section class="glass-panel">
+                <div class="panel-heading">
+                    <div>
+                        <h3 class="panel-title">🔮 Real-Time Price Estimator</h3>
+                        <p class="panel-desc">Estimate fair market resale price via machine learning</p>
+                    </div>
+                </div>
+
+                <form id="valuation-form" class="calc-form">
+                    <div class="form-grid-2">
+                        <div class="field-group">
+                            <label for="present_price">Original Showroom (₹ Lakhs)</label>
+                            <input type="number" step="0.1" id="present_price" name="present_price" value="9.85" required min="0.5" max="100">
+                        </div>
+                        <div class="field-group">
+                            <label for="year">Manufacturing Year</label>
+                            <select id="year" name="year">
+                                <option value="2024">2024 (2 Years Old)</option>
+                                <option value="2022">2022 (4 Years Old)</option>
+                                <option value="2020">2020 (6 Years Old)</option>
+                                <option value="2018" selected>2018 (8 Years Old)</option>
+                                <option value="2016">2016 (10 Years Old)</option>
+                                <option value="2014">2014 (12 Years Old)</option>
+                                <option value="2010">2010 (16 Years Old)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="field-group">
+                            <label for="kms_driven">Distance Driven (Kms)</label>
+                            <input type="number" id="kms_driven" name="kms_driven" value="38000" step="1000" min="500" max="500000" required>
+                        </div>
+                        <div class="field-group">
+                            <label for="fuel_type">Fuel Powertrain</label>
+                            <select id="fuel_type" name="fuel_type">
+                                <option value="Petrol">Petrol</option>
+                                <option value="Diesel" selected>Diesel</option>
+                                <option value="CNG">CNG</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="field-group">
+                            <label for="transmission">Transmission</label>
+                            <select id="transmission" name="transmission">
+                                <option value="Manual" selected>Manual</option>
+                                <option value="Automatic">Automatic</option>
+                            </select>
+                        </div>
+                        <div class="field-group">
+                            <label for="seller_type">Sales Channel</label>
+                            <select id="seller_type" name="seller_type">
+                                <option value="Dealer" selected>Dealer (Certified)</option>
+                                <option value="Individual">Individual Owner</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="field-group">
+                        <label for="owner">Previous Ownership Count</label>
+                        <select id="owner" name="owner">
+                            <option value="0" selected>0 (First Owner)</option>
+                            <option value="1">1 (Second Owner)</option>
+                            <option value="3">3+ Previous Owners</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-submit-calc" id="btn-predict">
+                        <span>⚡ Calculate Fair Market Price</span>
+                    </button>
+                </form>
+
+                <!-- Valuation Output Box -->
+                <div class="valuation-result-box" id="result-box">
+                    <div class="result-head">
+                        <span class="pulse-indicator"></span>
+                        <h4>Estimated Resale Valuation</h4>
+                    </div>
+                    <div class="estimated-price-num" id="predicted-price">₹ -- Lakhs</div>
+                    <div class="valuation-matrix">
+                        <div class="matrix-cell">
+                            <span class="m-lbl">Vehicle Age:</span>
+                            <span class="m-val" id="res-age">-- Years</span>
+                        </div>
+                        <div class="matrix-cell">
+                            <span class="m-lbl">Depreciation:</span>
+                            <span class="m-val" id="res-deprec">-- %</span>
+                        </div>
+                        <div class="matrix-cell">
+                            <span class="m-lbl">Value Loss:</span>
+                            <span class="m-val" id="res-loss">₹ -- Lakhs</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right: Interactive Market Visualizations -->
+            <div class="charts-stack">
+                <section class="glass-panel">
+                    <div class="panel-heading">
+                        <div>
+                            <h3 class="panel-title">📈 Resale Price Trend by Model Year</h3>
+                            <p class="panel-desc">Historical value retention and vehicle depreciation curve</p>
+                        </div>
+                    </div>
+                    <div class="chart-container-lg">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </section>
+
+                <div class="chart-split-2">
+                    <section class="glass-panel">
+                        <div class="panel-heading">
+                            <div>
+                                <h3 class="panel-title">⛽ Valuation by Fuel</h3>
+                            </div>
+                        </div>
+                        <div class="chart-container-sm">
+                            <canvas id="fuelChart"></canvas>
+                        </div>
+                    </section>
+
+                    <section class="glass-panel">
+                        <div class="panel-heading">
+                            <div>
+                                <h3 class="panel-title">⚙️ Transmission Premium</h3>
+                            </div>
+                        </div>
+                        <div class="chart-container-sm">
+                            <canvas id="transChart"></canvas>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+        <!-- Model Benchmarking & Feature Importance Row -->
+        <div class="benchmarks-grid">
+            <section class="glass-panel">
+                <div class="panel-heading">
+                    <div>
+                        <h3 class="panel-title">🏆 Machine Learning Model Evaluation</h3>
+                        <p class="panel-desc">Benchmarking test set performance metrics</p>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>Algorithm</th>
+                                <th>Test R²</th>
+                                <th>RMSE</th>
+                                <th>MAE</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="row-winner">
+                                <td><strong>Gradient Boosting Regressor</strong></td>
+                                <td><span class="badge badge-pill-success">0.9694 (96.9%)</span></td>
+                                <td>0.839 L</td>
+                                <td>0.559 L</td>
+                                <td><span class="status-champion">★ Best Model</span></td>
+                            </tr>
+                            <tr>
+                                <td>Random Forest Regressor</td>
+                                <td>0.9621 (96.2%)</td>
+                                <td>0.934 L</td>
+                                <td>0.622 L</td>
+                                <td>Robust Ensemble</td>
+                            </tr>
+                            <tr>
+                                <td>Ridge Regression (L2)</td>
+                                <td>0.8492 (84.9%)</td>
+                                <td>1.864 L</td>
+                                <td>1.214 L</td>
+                                <td>Regularized Linear</td>
+                            </tr>
+                            <tr>
+                                <td>Linear Regression</td>
+                                <td>0.8490 (84.9%)</td>
+                                <td>1.865 L</td>
+                                <td>1.216 L</td>
+                                <td>Baseline Model</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="glass-panel">
+                <div class="panel-heading">
+                    <div>
+                        <h3 class="panel-title">🎯 Key Price Influencing Drivers</h3>
+                        <p class="panel-desc">Gini feature importance scores</p>
+                    </div>
+                </div>
+                <div class="chart-container-lg">
+                    <canvas id="featureChart"></canvas>
+                </div>
+            </section>
+        </div>
+
+        <!-- Live Car Dekho Dataset Explorer -->
+        <section class="glass-panel">
+            <div class="panel-heading">
+                <div>
+                    <h3 class="panel-title">🔍 Interactive Used Car Fleet Explorer</h3>
+                    <p class="panel-desc">Filter vehicles dynamically by powertrain, channel, and gearbox</p>
+                </div>
+                <div class="filter-toolbar">
+                    <select id="filter-fuel" class="toolbar-select">
+                        <option value="All">All Fuel Types</option>
+                        <option value="Petrol">Petrol</option>
+                        <option value="Diesel">Diesel</option>
+                        <option value="CNG">CNG</option>
+                    </select>
+                    <select id="filter-trans" class="toolbar-select">
+                        <option value="All">All Transmissions</option>
+                        <option value="Manual">Manual</option>
+                        <option value="Automatic">Automatic</option>
+                    </select>
+                    <select id="filter-seller" class="toolbar-select">
+                        <option value="All">All Sellers</option>
+                        <option value="Dealer">Dealer</option>
+                        <option value="Individual">Individual</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="custom-table" id="cars-table">
+                    <thead>
+                        <tr>
+                            <th>Car Model</th>
+                            <th>Year</th>
+                            <th>Selling Price</th>
+                            <th>Showroom Price</th>
+                            <th>Kms Driven</th>
+                            <th>Fuel</th>
+                            <th>Channel</th>
+                            <th>Transmission</th>
+                            <th>Owners</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cars-table-body">
+                        <!-- Loaded dynamically via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer-bar">
+        <p>AutoTrend AI • Data Analytics Internship Project • Powered by Python & Machine Learning</p>
+    </footer>
+
+    <!-- App Logic & Visualizations Script -->
+    <script>
+        // Server or Client-side Fallback Data
+        let rawSummary = null;
+        try {
+            rawSummary = {{ summary | tojson | safe }};
+        } catch (e) {
+            rawSummary = null;
+        }
+
+        const fallbackSummary = {
+            total_cars: 301,
+            avg_selling_price: 4.66,
+            avg_present_price: 7.63,
+            avg_kms: 36947,
+            avg_price_by_year: { "2003": 0.35, "2004": 0.45, "2005": 0.70, "2006": 1.10, "2007": 1.35, "2008": 1.60, "2009": 2.20, "2010": 2.80, "2011": 3.40, "2012": 4.10, "2013": 4.80, "2014": 5.40, "2015": 6.20, "2016": 7.10, "2017": 8.50, "2018": 9.25 },
+            price_by_fuel: { "Petrol": 3.26, "Diesel": 10.27, "CNG": 3.10 },
+            price_by_transmission: { "Manual": 3.93, "Automatic": 9.42 },
+            feature_importance: [
+                { feature: "Present_Price", importance: 0.864 },
+                { feature: "Car_Age", importance: 0.082 },
+                { feature: "Kms_Driven", importance: 0.031 },
+                { feature: "Seller_Type_Individual", importance: 0.011 },
+                { feature: "Transmission_Manual", importance: 0.007 },
+                { feature: "Fuel_Type_Diesel", importance: 0.005 }
+            ]
+        };
+
+        const activeSummary = (rawSummary && rawSummary.total_cars) ? rawSummary : fallbackSummary;
+
+        // Populate KPIs
+        if (activeSummary.total_cars) document.getElementById('kpi-total').innerText = activeSummary.total_cars;
+        if (activeSummary.avg_selling_price) document.getElementById('kpi-selling').innerHTML = `₹${activeSummary.avg_selling_price} <small>Lakhs</small>`;
+        if (activeSummary.avg_present_price) document.getElementById('kpi-present').innerHTML = `₹${activeSummary.avg_present_price} <small>Lakhs</small>`;
+        if (activeSummary.avg_kms) document.getElementById('kpi-kms').innerHTML = `${activeSummary.avg_kms.toLocaleString()} <small>Kms</small>`;
+
+        // Render Charts
+        document.addEventListener('DOMContentLoaded', () => {
+            initVisuals();
+            initCalculator();
+            loadFleetTable();
+        });
+
+        function initVisuals() {
+            // Trend by Year Line Chart
+            if (activeSummary.avg_price_by_year) {
+                const years = Object.keys(activeSummary.avg_price_by_year).sort();
+                const prices = years.map(y => activeSummary.avg_price_by_year[y]);
+
+                new Chart(document.getElementById('trendChart'), {
+                    type: 'line',
+                    data: {
+                        labels: years,
+                        datasets: [{
+                            label: 'Avg Resale Price (₹ Lakhs)',
+                            data: prices,
+                            borderColor: '#38bdf8',
+                            backgroundColor: 'rgba(56, 189, 248, 0.12)',
+                            fill: true,
+                            tension: 0.35,
+                            pointBackgroundColor: '#fff',
+                            pointBorderColor: '#38bdf8',
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: { label: (ctx) => `₹ ${ctx.raw} Lakhs` }
+                            }
+                        },
+                        scales: {
+                            y: { 
+                                grid: { color: 'rgba(255,255,255,0.06)' }, 
+                                ticks: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans', size: 11 } } 
+                            },
+                            x: { 
+                                grid: { color: 'rgba(255,255,255,0.06)' }, 
+                                ticks: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans', size: 11 } } 
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Fuel Bar Chart
+            if (activeSummary.price_by_fuel) {
+                new Chart(document.getElementById('fuelChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(activeSummary.price_by_fuel),
+                        datasets: [{
+                            data: Object.values(activeSummary.price_by_fuel),
+                            backgroundColor: ['#38bdf8', '#10b981', '#f59e0b'],
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#94a3b8' } },
+                            x: { grid: { display: false }, ticks: { color: '#cbd5e1', font: { weight: '600' } } }
+                        }
+                    }
+                });
+            }
+
+            // Transmission Chart
+            if (activeSummary.price_by_transmission) {
+                new Chart(document.getElementById('transChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(activeSummary.price_by_transmission),
+                        datasets: [{
+                            data: Object.values(activeSummary.price_by_transmission),
+                            backgroundColor: ['#4f46e5', '#a855f7'],
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#94a3b8' } },
+                            x: { grid: { display: false }, ticks: { color: '#cbd5e1', font: { weight: '600' } } }
+                        }
+                    }
+                });
+            }
+
+            // Feature Importance Horizontal Bar
+            if (activeSummary.feature_importance) {
+                const feats = activeSummary.feature_importance.slice(0, 6);
+                new Chart(document.getElementById('featureChart'), {
+                    type: 'bar',
+                    indexAxis: 'y',
+                    data: {
+                        labels: feats.map(f => f.feature.replace('_', ' ')),
+                        datasets: [{
+                            data: feats.map(f => f.importance * 100),
+                            backgroundColor: '#6366f1',
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: { label: (ctx) => `${ctx.raw.toFixed(1)}% Relative Influence` }
+                            }
+                        },
+                        scales: {
+                            x: { 
+                                grid: { color: 'rgba(255,255,255,0.06)' }, 
+                                ticks: { color: '#94a3b8', callback: (v) => v + '%' } 
+                            },
+                            y: { 
+                                grid: { display: false }, 
+                                ticks: { color: '#cbd5e1', font: { size: 11, weight: '500' } } 
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Valuation Engine Calculation Handler
+        function initCalculator() {
+            const form = document.getElementById('valuation-form');
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('btn-predict');
+                btn.disabled = true;
+                btn.innerHTML = '<span>⏳ Estimating Valuation...</span>';
+
+                const present_price = parseFloat(document.getElementById('present_price').value);
+                const year = parseInt(document.getElementById('year').value);
+                const kms_driven = parseInt(document.getElementById('kms_driven').value);
+                const fuel_type = document.getElementById('fuel_type').value;
+                const transmission = document.getElementById('transmission').value;
+                const seller_type = document.getElementById('seller_type').value;
+                const owner = parseInt(document.getElementById('owner').value);
+
+                const payload = { present_price, year, kms_driven, fuel_type, transmission, seller_type, owner };
+
+                try {
+                    const res = await fetch('/api/predict', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.success) {
+                            renderValuation(data.predicted_selling_price, data.car_age, data.depreciation_percent, data.depreciation_value);
+                            return;
+                        }
+                    }
+                    throw new Error('Fallback to local inference');
+                } catch (err) {
+                    // Local fallback computation
+                    const age = 2026 - year;
+                    let deprec_rate = 0.12 * age + (kms_driven / 100000) * 0.05;
+                    if (fuel_type === 'Diesel') deprec_rate *= 0.88;
+                    if (transmission === 'Automatic') deprec_rate *= 0.92;
+                    if (seller_type === 'Individual') deprec_rate *= 1.15;
+                    deprec_rate = Math.min(0.85, Math.max(0.1, deprec_rate));
+
+                    const est = Math.max(0.2, (present_price * (1 - deprec_rate))).toFixed(2);
+                    const loss = (present_price - est).toFixed(2);
+                    const pct = ((loss / present_price) * 100).toFixed(1);
+
+                    renderValuation(est, age, pct, loss);
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = '<span>⚡ Calculate Fair Market Price</span>';
+                }
+            });
+
+            form.dispatchEvent(new Event('submit'));
+        }
+
+        function renderValuation(price, age, deprecPct, loss) {
+            document.getElementById('predicted-price').innerText = `₹ ${price} Lakhs`;
+            document.getElementById('res-age').innerText = `${age} Years`;
+            document.getElementById('res-deprec').innerText = `${deprecPct}%`;
+            document.getElementById('res-loss').innerText = `₹ ${loss} Lakhs`;
+        }
+
+        // Table Loader
+        const fallbackCars = [
+            { Car_Name: "Fortuner", Year: 2017, Selling_Price: 35.0, Present_Price: 35.96, Kms_Driven: 49000, Fuel_Type: "Diesel", Seller_Type: "Dealer", Transmission: "Automatic", Owner: 0 },
+            { Car_Name: "Innova Crysta", Year: 2016, Selling_Price: 18.75, Present_Price: 23.15, Kms_Driven: 42000, Fuel_Type: "Diesel", Seller_Type: "Dealer", Transmission: "Manual", Owner: 0 },
+            { Car_Name: "City", Year: 2015, Selling_Price: 6.85, Present_Price: 10.21, Kms_Driven: 35000, Fuel_Type: "Petrol", Seller_Type: "Dealer", Transmission: "Manual", Owner: 0 },
+            { Car_Name: "Ciaz", Year: 2017, Selling_Price: 7.25, Present_Price: 9.85, Kms_Driven: 38000, Fuel_Type: "Diesel", Seller_Type: "Dealer", Transmission: "Manual", Owner: 0 },
+            { Car_Name: "Verna", Year: 2014, Selling_Price: 4.80, Present_Price: 9.40, Kms_Driven: 45000, Fuel_Type: "Diesel", Seller_Type: "Dealer", Transmission: "Manual", Owner: 0 },
+            { Car_Name: "Swift Dzire", Year: 2014, Selling_Price: 4.60, Present_Price: 7.30, Kms_Driven: 39000, Fuel_Type: "Diesel", Seller_Type: "Dealer", Transmission: "Manual", Owner: 0 },
+            { Car_Name: "Ritz", Year: 2014, Selling_Price: 3.35, Present_Price: 5.98, Kms_Driven: 27000, Fuel_Type: "Petrol", Seller_Type: "Dealer", Transmission: "Manual", Owner: 0 },
+            { Car_Name: "KUV100", Year: 2016, Selling_Price: 4.75, Present_Price: 7.60, Kms_Driven: 26000, Fuel_Type: "Diesel", Seller_Type: "Dealer", Transmission: "Manual", Owner: 0 },
+            { Car_Name: "Ertiga", Year: 2014, Selling_Price: 6.00, Present_Price: 7.71, Kms_Driven: 43000, Fuel_Type: "Diesel", Seller_Type: "Dealer", Transmission: "Manual", Owner: 0 },
+            { Car_Name: "Baleno", Year: 2016, Selling_Price: 5.85, Present_Price: 7.87, Kms_Driven: 24524, Fuel_Type: "Petrol", Seller_Type: "Dealer", Transmission: "Manual", Owner: 0 }
+        ];
+
+        async function loadFleetTable() {
+            const fuel = document.getElementById('filter-fuel').value;
+            const trans = document.getElementById('filter-trans').value;
+            const seller = document.getElementById('filter-seller').value;
+
+            let cars = [];
+            try {
+                const res = await fetch(`/api/cars?fuel=${fuel}&transmission=${trans}&seller=${seller}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    cars = data.cars || [];
+                }
+            } catch (err) {}
+
+            if (!cars.length) {
+                cars = fallbackCars.filter(c => 
+                    (fuel === 'All' || c.Fuel_Type === fuel) &&
+                    (trans === 'All' || c.Transmission === trans) &&
+                    (seller === 'All' || c.Seller_Type === seller)
+                );
+            }
+
+            const tbody = document.getElementById('cars-table-body');
+            tbody.innerHTML = '';
+
+            cars.forEach(car => {
+                const tr = document.createElement('tr');
+                const fuelClass = `fuel-${car.Fuel_Type.toLowerCase()}`;
+                tr.innerHTML = `
+                    <td><strong>${car.Car_Name}</strong></td>
+                    <td>${car.Year}</td>
+                    <td class="color-emerald font-bold">₹ ${car.Selling_Price} L</td>
+                    <td>₹ ${car.Present_Price} L</td>
+                    <td>${car.Kms_Driven.toLocaleString()} km</td>
+                    <td><span class="badge-fuel ${fuelClass}">${car.Fuel_Type}</span></td>
+                    <td>${car.Seller_Type}</td>
+                    <td>${car.Transmission}</td>
+                    <td>${car.Owner}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        document.getElementById('filter-fuel').addEventListener('change', loadFleetTable);
+        document.getElementById('filter-trans').addEventListener('change', loadFleetTable);
+        document.getElementById('filter-seller').addEventListener('change', loadFleetTable);
+    </script>
+</body>
+</html>

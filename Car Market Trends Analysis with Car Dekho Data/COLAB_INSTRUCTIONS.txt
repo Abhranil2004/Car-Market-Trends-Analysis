@@ -1,0 +1,23 @@
+==============================================================
+   GOOGLE COLAB UPLOAD INSTRUCTIONS (Step-by-Step)
+==============================================================
+
+Option A: Car Market Trends Analysis Project
+--------------------------------------------------------------
+1. Open https://colab.research.google.com/
+2. Click "Upload" -> Select "Car_Market_Trends_Analysis.ipynb"
+3. In Colab's left sidebar, click the Folder icon (Files) -> Click Upload:
+   Select "1776311302-P3-Car Market Trends Analysis with Car Dekho Data.csv"
+4. Click Runtime -> Run all (Ctrl+F9)
+5. Click Share (top-right) -> "Anyone with the link can view" -> Copy link!
+
+--------------------------------------------------------------
+Option B: Airbnb NYC Data Analytics Project
+--------------------------------------------------------------
+1. Open https://colab.research.google.com/
+2. Click "Upload" -> Select "Airbnb_Data_Analytics.ipynb"
+3. In Colab's left sidebar, click the Folder icon (Files) -> Click Upload:
+   Select "Airbnb_Open_Data.xlsx"
+4. Click Runtime -> Run all (Ctrl+F9)
+5. Click Share (top-right) -> "Anyone with the link can view" -> Copy link!
+==============================================================

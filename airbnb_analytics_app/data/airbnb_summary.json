@@ -1,0 +1,97 @@
+{
+  "total_listings": 101775,
+  "avg_price": 625.35,
+  "median_price": 625.0,
+  "avg_reviews": 27.5,
+  "avg_availability": 132.9,
+  "borough_stats": {
+    "Bronx": {
+      "listing_count": 2687,
+      "avg_price": 627.76,
+      "median_price": 632.0,
+      "avg_availability": 175.39,
+      "avg_reviews": 31.71
+    },
+    "Brooklyn": {
+      "listing_count": 41535,
+      "avg_price": 626.5,
+      "median_price": 626.0,
+      "avg_availability": 121.53,
+      "avg_reviews": 28.51
+    },
+    "Manhattan": {
+      "listing_count": 43444,
+      "avg_price": 622.66,
+      "median_price": 621.5,
+      "avg_availability": 132.63,
+      "avg_reviews": 24.12
+    },
+    "Queens": {
+      "listing_count": 13163,
+      "avg_price": 630.25,
+      "median_price": 628.0,
+      "avg_availability": 156.93,
+      "avg_reviews": 33.64
+    },
+    "Staten Island": {
+      "listing_count": 946,
+      "avg_price": 623.99,
+      "median_price": 628.0,
+      "avg_availability": 193.67,
+      "avg_reviews": 35.89
+    }
+  },
+  "room_stats": {
+    "Entire home/apt": {
+      "listing_count": 53284,
+      "avg_price": 625.22,
+      "avg_availability": 134.05
+    },
+    "Hotel room": {
+      "listing_count": 115,
+      "avg_price": 666.39,
+      "avg_availability": 219.93
+    },
+    "Private room": {
+      "listing_count": 46176,
+      "avg_price": 624.95,
+      "avg_availability": 129.82
+    },
+    "Shared room": {
+      "listing_count": 2200,
+      "avg_price": 634.83,
+      "avg_availability": 166.95
+    }
+  },
+  "top_neighbourhoods": {
+    "Bedford-Stuyvesant": 7881,
+    "Williamsburg": 7708,
+    "Harlem": 5428,
+    "Bushwick": 4937,
+    "Hell's Kitchen": 3945,
+    "Upper West Side": 3832,
+    "Upper East Side": 3643,
+    "East Village": 3456,
+    "Midtown": 3347,
+    "Crown Heights": 3240
+  },
+  "price_ranges": {
+    "Budget ($0-$250)": 17709,
+    "Moderate ($251-$600)": 31014,
+    "Premium ($601-$900)": 26455,
+    "Luxury ($901+)": 26597
+  },
+  "borough_list": [
+    "Bronx",
+    "Brooklyn",
+    "Manhattan",
+    "Queens",
+    "Staten Island"
+  ],
+  "room_types": [
+    "Entire home/apt",
+    "Hotel room",
+    "Private room",
+    "Shared room"
+  ]
+}

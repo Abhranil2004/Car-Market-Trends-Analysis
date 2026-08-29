@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: car-market-valuation-engine
+    env: python
+    buildCommand: pip install -r requirements.txt && python train_car_model.py
+    startCommand: gunicorn car_market_app.app:app --bind 0.0.0.0:$PORT
+    plan: free
